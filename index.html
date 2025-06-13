@@ -1,32 +1,39 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>AR Viewer</title>
-</head>
-<body>
-  <h1>AR Model Viewer</h1>
+<html lang="it">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Hippo AR Redirect</title>
+    <script>
+      const usdzUrl = "https://lorenzoferrario.github.io/gruppo02/Hippo.usdz";
+      const glbUrl = "https://lorenzoferrario.github.io/gruppo02/Hippo.glb";
 
-  <p>Sei su iPhone? <a id="apple-link" href="" target="_blank">Apri modello AR (usdz)</a></p>
-  <p>Sei su Android? <a id="android-link" href="" target="_blank">Apri modello AR (glb)</a></p>
+      const userAgent = navigator.userAgent || navigator.vendor || window.opera;
 
-  <script>
-    const appleModel = 'Hippo_Apple AR_02.usdz';
-    const androidModel = 'Hippo_Android AR_02.glb';
-
-    const userAgent = navigator.userAgent || navigator.vendor || window.opera;
-
-    if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
-      document.getElementById('apple-link').href = appleModel;
-      document.getElementById('android-link').style.display = 'none';
-    } else if (/android/i.test(userAgent)) {
-      document.getElementById('android-link').href = androidModel;
-      document.getElementById('apple-link').style.display = 'none';
-    } else {
-      document.getElementById('apple-link').href = appleModel;
-      document.getElementById('android-link').href = androidModel;
-    }
-  </script>
-</body>
+      if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
+        // iOS → Quick Look (ARKit)
+        window.location.href = usdzUrl;
+      } else if (/android/i.test(userAgent)) {
+        // Android → Scene Viewer
+        const sceneViewerUrl = `intent://arvr.google.com/scene-viewer/1.0?file=${glbUrl}&mode=ar_preferred#Intent;scheme=https;package=com.google.ar.core;action=android.intent.action.VIEW;S.browser_fallback_url=${glbUrl};end;`;
+        window.location.href = sceneViewerUrl;
+      } else {
+        // Altri dispositivi → mostro link manuali
+        document.addEventListener("DOMContentLoaded", () => {
+          document.body.innerHTML = `
+            <h2>Questo contenuto è disponibile su dispositivi mobili</h2>
+            <p><a href="${usdzUrl}">Visualizza su iPhone (USDZ)</a></p>
+            <p><a href="${glbUrl}">Visualizza su Android (GLB)</a></p>
+          `;
+        });
+      }
+    </script>
+    <style>
+      body {
+        font-family: sans-serif;
+        text-align: center;
+        padding: 50px;
+      }
+    </style>
+  </head>
+  <body></body>
 </html>
