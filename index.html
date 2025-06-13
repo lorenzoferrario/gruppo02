@@ -2,104 +2,398 @@
 <html lang="it">
   <head>
     <meta charset="UTF-8" />
-    <title>Sistema modulare per il trasporto dell’acqua</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sistema modulare per il trasporto dell'acqua</title>
+    <meta name="description" content="Visualizzatore AR per sistema modulare di trasporto acqua - Lab Design Prodotto Industriale" />
+    
+    <!-- Model Viewer -->
     <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet" />
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+    
     <style>
+      :root {
+        --primary-color: #822929;
+        --primary-hover: #6b1f1f;
+        --secondary-color: #64748b;
+        --text-primary: #0f172a;
+        --text-secondary: #475569;
+        --text-muted: #94a3b8;
+        --background: #ffffff;
+        --surface: #f8fafc;
+        --border: #e2e8f0;
+        --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+        --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        --radius: 12px;
+        --radius-sm: 8px;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
       body {
         margin: 0;
-        background-color: #f9f9f9;
-        font-family: 'Montserrat', sans-serif;
+        padding: 0;
+        background: linear-gradient(135deg, #207EA8 0%, #1a6b91 100%);
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        font-feature-settings: 'kern' 1;
+        line-height: 1.6;
+        color: var(--text-primary);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 2rem 1.5rem;
+        flex: 1;
         display: flex;
         flex-direction: column;
         align-items: center;
-        justify-content: flex-start;
-        min-height: 100vh;
-        text-align: center;
-        padding: 2rem 1rem;
       }
 
-      h1 {
-        font-size: 1.8rem;
-        margin: 1rem 0;
+      .header {
+        text-align: center;
+        margin-bottom: 3rem;
+      }
+
+      .title {
+        font-size: clamp(1.75rem, 4vw, 2.5rem);
         font-weight: 600;
-        color: #333;
+        margin: 0 0 0.75rem 0;
+        color: var(--text-primary);
+        letter-spacing: -0.025em;
+      }
+
+      .subtitle {
+        font-size: 1.125rem;
+        color: var(--text-secondary);
+        margin: 0;
+        font-weight: 400;
+      }
+
+      .viewer-container {
+        width: 100%;
+        max-width: 700px;
+        margin-bottom: 2.5rem;
+        position: relative;
       }
 
       model-viewer {
         width: 100%;
-        max-width: 600px;
-        height: 70vh;
-        margin: 1rem 0;
-        background: white;
-        border-radius: 12px;
-        box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+        height: min(70vh, 500px);
+        min-height: 400px;
+        background: var(--background);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow-lg);
+        border: 1px solid var(--border);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       }
 
-      .buttons {
-        margin: 1rem 0;
+      model-viewer:hover {
+        box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+        transform: translateY(-2px);
       }
 
-      .buttons a {
-        display: inline-block;
-        margin: 0.5rem;
-        padding: 0.75rem 1.25rem;
-        background-color: #007aff;
-        color: white;
-        border-radius: 8px;
+      .loading-indicator {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: var(--text-muted);
+        font-size: 0.875rem;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+
+      model-viewer:not([loaded]) + .loading-indicator {
+        opacity: 1;
+      }
+
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        justify-content: center;
+        margin-bottom: 2.5rem;
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1.5rem;
+        font-size: 0.875rem;
+        font-weight: 500;
         text-decoration: none;
+        border-radius: var(--radius-sm);
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        cursor: pointer;
+        border: none;
+        font-family: inherit;
+      }
+
+      .btn-primary {
+        background: var(--primary-color);
+        color: white;
+        box-shadow: var(--shadow-sm);
+      }
+
+      .btn-primary:hover {
+        background: var(--primary-hover);
+        box-shadow: var(--shadow-md);
+        transform: translateY(-1px);
+      }
+
+      .btn-secondary {
+        background: var(--primary-color);
+        color: white;
+        border: 1px solid var(--primary-color);
+        box-shadow: var(--shadow-sm);
+      }
+
+      .btn-secondary:hover {
+        background: var(--primary-hover);
+        box-shadow: var(--shadow-md);
+        transform: translateY(-1px);
+      }
+
+      .info-card {
+        background: var(--background);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        box-shadow: var(--shadow-sm);
+        text-align: center;
+        max-width: 500px;
+      }
+
+      .info-title {
+        font-size: 1rem;
+        font-weight: 500;
+        color: var(--text-primary);
+        margin: 0 0 0.5rem 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+      }
+
+      .info-text {
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+        margin: 0;
+      }
+
+      .footer {
+        background: var(--background);
+        border-top: 1px solid var(--border);
+        padding: 2rem 1.5rem;
+        text-align: center;
+        margin-top: auto;
+      }
+
+      .footer-content {
+        max-width: 600px;
+        margin: 0 auto;
+      }
+
+      .course-info {
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+        margin-bottom: 1rem;
+      }
+
+      .course-title {
         font-weight: 600;
-        transition: background-color 0.3s ease;
+        color: var(--text-primary);
       }
 
-      .buttons a:hover {
-        background-color: #005ecb;
+      .instructors {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        margin-bottom: 1rem;
       }
 
-      p.info {
-        margin-top: 2rem;
-        font-size: 0.95rem;
-        color: #444;
-        line-height: 1.4;
+      .team-info {
+        font-size: 0.875rem;
+        color: var(--text-primary);
+        font-weight: 500;
       }
 
-      footer {
-        margin-top: 2rem;
-        font-size: 0.85rem;
-        color: #777;
+      .team-members {
+        font-size: 0.8rem;
+        color: var(--text-secondary);
+        font-weight: 400;
+      }
+
+      /* Icons */
+      .icon {
+        width: 1.25rem;
+        height: 1.25rem;
+        display: inline-block;
+      }
+
+      /* Responsive Design */
+      @media (max-width: 640px) {
+        .container {
+          padding: 1.5rem 1rem;
+        }
+
+        .header {
+          margin-bottom: 2rem;
+        }
+
+        .actions {
+          flex-direction: column;
+          align-items: stretch;
+        }
+
+        .btn {
+          justify-content: center;
+        }
+
+        model-viewer {
+          height: 60vh;
+          min-height: 300px;
+        }
+      }
+
+      /* Dark mode support */
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --primary-color: #3b82f6;
+          --primary-hover: #2563eb;
+          --text-primary: #f1f5f9;
+          --text-secondary: #cbd5e1;
+          --text-muted: #64748b;
+          --background: #0f172a;
+          --surface: #1e293b;
+          --border: #334155;
+        }
+
+        body {
+          background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        }
+      }
+
+      /* Animations */
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .header,
+      .viewer-container,
+      .actions,
+      .info-card {
+        animation: fadeInUp 0.6s ease-out;
+      }
+
+      .viewer-container {
+        animation-delay: 0.1s;
+      }
+
+      .actions {
+        animation-delay: 0.2s;
+      }
+
+      .info-card {
+        animation-delay: 0.3s;
       }
     </style>
   </head>
-
   <body>
-    <h1>Sistema modulare per il trasporto dell’acqua</h1>
+    <div class="container">
+      <header class="header">
+        <h1 class="title">Sistema modulare per il trasporto dell'acqua</h1>
+        <p class="subtitle">Visualizzazione AR interattiva</p>
+      </header>
 
-    <model-viewer
-      src="Hippo.glb"
-      ios-src="Hippo.usdz"
-      alt="Modello 3D di un ippopotamo"
-      ar
-      ar-modes="scene-viewer quick-look webxr"
-      auto-rotate
-      camera-controls
-      shadow-intensity="1"
-      exposure="1"
-    >
-    </model-viewer>
+      <div class="viewer-container">
+        <model-viewer
+          src="Hippo.glb"
+          ios-src="Hippo.usdz"
+          alt="Modello 3D del sistema modulare per il trasporto dell'acqua"
+          ar
+          ar-modes="scene-viewer quick-look webxr"
+          auto-rotate
+          camera-controls
+          shadow-intensity="1"
+          exposure="1"
+          loading="lazy"
+          reveal="auto"
+        >
+        </model-viewer>
+        <div class="loading-indicator">Caricamento modello...</div>
+      </div>
 
-    <div class="buttons">
-      <a href="https://github.com/lorenzoferrario/gruppo02/raw/refs/heads/main/Hippo.glb" target="_blank">Scarica GLB</a>
-      <a href="https://github.com/lorenzoferrario/gruppo02/raw/refs/heads/main/Hippo.usdz" target="_blank">Scarica USDZ</a>
+      <div class="actions">
+        <a href="https://github.com/lorenzoferrario/gruppo02/raw/refs/heads/main/Hippo.glb" 
+           class="btn btn-primary" 
+           target="_blank" 
+           rel="noopener">
+          <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+          </svg>
+          Scarica GLB
+        </a>
+        <a href="https://github.com/lorenzoferrario/gruppo02/raw/refs/heads/main/Hippo.usdz" 
+           class="btn btn-secondary" 
+           target="_blank" 
+           rel="noopener">
+          <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+          </svg>
+          Scarica USDZ
+        </a>
+      </div>
+
+      <div class="info-card">
+        <h3 class="info-title">
+          <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+          </svg>
+          Visualizzazione AR
+        </h3>
+        <p class="info-text">
+          Apri questo sito da smartphone per visualizzare il modello in realtà aumentata. 
+          Tocca l'icona AR nel visualizzatore per iniziare.
+        </p>
+      </div>
     </div>
 
-    <p class="info">
-      Apri questo sito da smartphone per vedere il modello in realtà aumentata.
-    </p>
-
-    <footer>
-      <strong>Lab. di Design del Prodotto Industriale</strong><br />
-      Docenti: Matteo Ingaramo, Lucia Rampino, Fabio Figoli<br /><br />
-      <strong>Gruppo 02</strong>: Taylor Baidoo, Lorenzo Bertocchi, Lorenzo Ferrario, Federico Grasso
+    <footer class="footer">
+      <div class="footer-content">
+        <div class="course-info">
+          <div class="course-title">Politecnico di Milano</div>
+          <div class="course-title">Laboratorio di Design del Prodotto Industriale</div>
+        </div>
+        <div class="instructors">
+          <strong>Docenti:</strong> Matteo Ingaramo, Lucia Rampino, Fabio Figoli
+        </div>
+        <div class="team-info">
+          <strong>Gruppo 02</strong>
+          <div class="team-members">
+            Taylor Baidoo, Lorenzo Bertocchi, Lorenzo Ferrario, Federico Grasso
+          </div>
+        </div>
+      </div>
     </footer>
   </body>
 </html>
