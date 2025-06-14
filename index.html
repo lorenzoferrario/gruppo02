@@ -175,6 +175,19 @@
         transform: translateY(-1px);
       }
 
+      .btn-ar {
+        background: linear-gradient(135deg, #8b5cf6 0%, #a855f7 100%);
+        color: white;
+        box-shadow: var(--shadow-sm);
+        font-weight: 600;
+      }
+
+      .btn-ar:hover {
+        background: linear-gradient(135deg, #7c3aed 0%, #9333ea 100%);
+        box-shadow: var(--shadow-md);
+        transform: translateY(-1px);
+      }
+
       .info-card {
         background: var(--background);
         border: 1px solid var(--border);
@@ -200,7 +213,12 @@
       .info-text {
         font-size: 0.875rem;
         color: var(--text-secondary);
-        margin: 0;
+        margin: 0 0 1rem 0;
+      }
+
+      .ar-link {
+        display: inline-block;
+        margin-top: 0.5rem;
       }
 
       .footer {
@@ -371,6 +389,14 @@
         <p class="info-text">
           Tocca l'icona AR nel visualizzatore qui sotto per vedere il modello in realtà aumentata.
         </p>
+        <div class="ar-link">
+          <button id="ar-button" class="btn btn-ar">
+            <svg class="icon" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor">
+              <path d="M440-181 240-296q-19-11-29.5-29T200-365v-230q0-22 10.5-40t29.5-29l200-115q19-11 40-11t40 11l200 115q19 11 29.5 29t10.5 40v230q0 22-10.5 40T720-296L520-181q-19 11-40 11t-40-11Zm0-92v-184l-160-93v185l160 92Zm80 0 160-92v-185l-160 93v184ZM80-680v-120q0-33 23.5-56.5T160-880h120v80H160v120H80ZM280-80H160q-33 0-56.5-23.5T80-160v-120h80v120h120v80Zm400 0v-80h120v-120h80v120q0 33-23.5 56.5T800-80H680Zm120-600v-120H680v-80h120q33 0 56.5 23.5T880-800v120h-80ZM480-526l158-93-158-91-158 91 158 93Zm0 45Zm0-45Zm40 69Zm-80 0Z"/>
+            </svg>
+            Visualizza in AR
+          </button>
+        </div>
       </div>
 
       <div class="viewer-container">
@@ -448,6 +474,7 @@
       document.addEventListener('DOMContentLoaded', function() {
         const modelViewer = document.getElementById('model-viewer');
         const loadingIndicator = document.getElementById('loading-indicator');
+        const arButton = document.getElementById('ar-button');
 
         // Nascondi l'indicatore di caricamento quando il modello è caricato
         modelViewer.addEventListener('load', function() {
@@ -458,6 +485,21 @@
         modelViewer.addEventListener('model-visibility', function(event) {
           if (event.detail.visible) {
             loadingIndicator.classList.add('hidden');
+          }
+        });
+
+        // Gestisci il click del pulsante AR
+        arButton.addEventListener('click', function() {
+          if (modelViewer.canActivateAR) {
+            modelViewer.activateAR();
+          } else {
+            // Fallback: prova ad aprire il file USDZ su iOS o GLB su Android
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+            const arUrl = isIOS 
+              ? 'https://github.com/lorenzoferrario/gruppo02/raw/refs/heads/main/Hippo.usdz'
+              : 'intent://arvr.google.com/scene-viewer/1.0?file=https://github.com/lorenzoferrario/gruppo02/raw/refs/heads/main/Hippo.glb&mode=ar_only#Intent;scheme=https;package=com.google.ar.core;action=android.intent.action.VIEW;S.browser_fallback_url=https://developers.google.com/ar;end;';
+            
+            window.open(arUrl, '_blank');
           }
         });
       });
